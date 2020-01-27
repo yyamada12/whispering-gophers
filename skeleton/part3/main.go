@@ -32,20 +32,36 @@ func main() {
 	flag.Parse()
 
 	// TODO: Create a net.Listener listening from the address in the "listen" flag.
+	l, err := net.Listen("tcp", *listenAddr)
+	if err != nil {
+		log.Fatal(err)
+	}
 
 	for {
 		// TODO: Accept a new connection from the listener.
+		c, err := l.Accept()
+		if err != nil {
+			log.Fatal(err)
+		}
 		go serve(c)
 	}
 }
 
 func serve(c net.Conn) {
 	// TODO: Use defer to Close the connection when this function returns.
+	defer c.Close()
 
 	// TODO: Create a new json.Decoder reading from the connection.
+	d := json.NewDecoder(c)
 	for {
 		// TODO: Create an empty message.
+		var m Message
 		// TODO: Decode a new message into the variable you just created.
+		if err := d.Decode(&m); err != nil {
+			log.Println(err)
+			return
+		}
 		// TODO: Print the message to the standard output.
+		fmt.Println(m.Body)
 	}
 }
