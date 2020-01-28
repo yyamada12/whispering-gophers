@@ -44,7 +44,8 @@ type Message struct {
 func main() {
 	flag.Parse()
 
-	// TODO: Launch dial in a new goroutine, passing in *dialAddr.
+	// Launch dial in a new goroutine, passing in *dialAddr.
+	go dial(*dialAddr)
 
 	l, err := net.Listen("tcp", *listenAddr)
 	if err != nil {
@@ -74,5 +75,22 @@ func serve(c net.Conn) {
 }
 
 func dial(addr string) {
-	// TODO: put the contents of the main function from part 2 here.
+	// put the contents of the main function from part 2 here.
+	c, err := net.Dial("tcp", *dialAddr)
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer c.Close()
+	s := bufio.NewScanner(os.Stdin)
+	e := json.NewEncoder(c)
+	for s.Scan() {
+		m := Message{Body: s.Text()}
+		err := e.Encode(m)
+		if err != nil {
+			log.Fatal(err)
+		}
+	}
+	if err := s.Err(); err != nil {
+		log.Fatal(err)
+	}
 }
