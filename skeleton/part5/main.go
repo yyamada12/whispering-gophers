@@ -50,6 +50,12 @@ func main() {
 	// TODO: Create a new listener using util.Listen and put it in a variable named l.
 	// TODO: Set the global variable self with the address of the listener.
 	// TODO: Print the address to the standard output
+	l, err := util.Listen()
+	if err != nil {
+		log.Fatal(err)
+	}
+	self = l.Addr().String()
+	log.Println("Listening on", self)
 
 	go dial(*peerAddr)
 
@@ -87,6 +93,7 @@ func dial(addr string) {
 	for s.Scan() {
 		m := Message{
 			// TODO: Put the self variable in the new Addr field.
+			Addr: self,
 			Body: s.Text(),
 		}
 		err := e.Encode(m)
